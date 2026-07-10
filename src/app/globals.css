@@ -12,7 +12,7 @@
 
 /* ─── Base ─── */
 html {
-  scroll-behavior: auto; /* GSAP/Lenis gère le scroll */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -60,19 +60,5 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Lenis smooth scroll */
-html.lenis {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
   overflow: hidden;
 }
