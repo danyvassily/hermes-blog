@@ -1,65 +1,149 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useGSAP } from '@gsap/react';
+import Lenis from 'lenis';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { Preloader } from '@/components/ui/Preloader';
+import { Header } from '@/components/sections/Header';
+import { CreatePost } from '@/components/sections/CreatePost';
+import { BlogFeed } from '@/components/sections/BlogFeed';
+import { usePosts } from '@/lib/store';
+import type { BlogPost } from '@/types';
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const lenisRef = useRef<Lenis | null>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
+  const { posts, addPost } = usePosts();
+
+  // ─── Init Lenis smooth scroll ───
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.8,
+      touchMultiplier: 1.5,
+    });
+
+    lenisRef.current = lenis;
+
+    function onRaf(time: number) {
+      lenis.raf(time);
+      ScrollTrigger.update();
+    }
+
+    gsap.ticker.add(onRaf);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove(onRaf);
+      lenis.destroy();
+    };
+  }, []);
+
+  // ─── Preloader complete ───
+  const handlePreloaderComplete = useCallback(() => {
+    setLoading(false);
+  }, []);
+
+  // ─── New post handler ───
+  const handlePostCreated = useCallback(
+    (post: BlogPost) => {
+      addPost(post);
+
+      // Scroll to feed after creating
+      setTimeout(() => {
+        const feedSection = document.getElementById('feed');
+        if (feedSection && lenisRef.current) {
+          lenisRef.current.scrollTo(feedSection, {
+            offset: -40,
+            duration: 1.5,
+            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          });
+        }
+      }, 400);
+    },
+    [addPost]
+  );
+
+  // ─── Footer animation ───
+  useGSAP(() => {
+    if (loading) return;
+    const main = mainRef.current;
+    if (!main) return;
+
+    gsap.from('.footer-content', {
+      y: 40,
+      opacity: 0,
+      duration: 1.2,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '.footer-content',
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      },
+    });
+  }, [loading]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* Preloader */}
+      <Preloader onComplete={handlePreloaderComplete} />
+
+      {/* Main content */}
+      <main
+        ref={mainRef}
+        className={`relative transition-opacity duration-700 ${
+          loading ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        {/* Header / Hero */}
+        <Header />
+
+        {/* Divider */}
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Create Post Section */}
+        <CreatePost onPostCreated={handlePostCreated} />
+
+        {/* Divider */}
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
         </div>
+
+        {/* Blog Feed */}
+        <div id="feed">
+          <BlogFeed posts={posts} />
+        </div>
+
+        {/* Footer */}
+        <footer className="border-t border-white/[0.04] px-6 py-16 md:px-12 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="footer-content flex flex-col items-center justify-between gap-8 md:flex-row">
+              <div>
+                <p className="text-lg font-light tracking-[0.2em] text-white/60">
+                  HERMÈS
+                </p>
+                <p className="mt-2 text-xs text-white/20">
+                  Messager des Idées — Blog Nouvelle Génération
+                </p>
+              </div>
+              <div className="flex items-center gap-6 text-xs text-white/20">
+                <span>© {new Date().getFullYear()}</span>
+                <span className="h-3 w-px bg-white/[0.06]" />
+                <span>Next.js + GSAP + Lenis</span>
+                <span className="h-3 w-px bg-white/[0.06]" />
+                <span>Propulsé par Hermes Agent</span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </main>
-    </div>
+    </>
   );
 }
