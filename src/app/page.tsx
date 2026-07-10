@@ -15,44 +15,32 @@ export default function Home() {
   const mainRef = useRef<HTMLDivElement>(null);
   const { posts, addPost } = usePosts();
 
-  // ─── Preloader complete ───
-  const handlePreloaderComplete = useCallback(() => {
-    setLoading(false);
-  }, []);
+  const handlePreloaderComplete = useCallback(() => setLoading(false), []);
 
-  // ─── New post handler ───
   const handlePostCreated = useCallback(
     (post: BlogPost) => {
       addPost(post);
-
       setTimeout(() => {
-        const feed = document.getElementById('feed');
-        feed?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('feed')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 400);
     },
     [addPost]
   );
 
-  // ─── Footer animation ───
   useGSAP(() => {
     if (loading) return;
     gsap.from('.footer-content', {
-      y: 40,
+      y: 20,
       opacity: 0,
-      duration: 1.2,
+      duration: 1,
       ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '.footer-content',
-        start: 'top 85%',
-        toggleActions: 'play none none none',
-      },
+      scrollTrigger: { trigger: '.footer-content', start: 'top 90%', toggleActions: 'play none none none' },
     });
   }, [loading]);
 
   return (
     <>
       <Preloader onComplete={handlePreloaderComplete} />
-
       <main
         ref={mainRef}
         className={`relative transition-opacity duration-700 ${
@@ -75,23 +63,16 @@ export default function Home() {
           <BlogFeed posts={posts} />
         </div>
 
-        <footer className="border-t border-white/[0.04] px-6 py-16 md:px-12 md:py-24">
+        <footer className="border-t border-white/[0.04] px-6 py-12 md:py-16">
           <div className="mx-auto max-w-7xl">
-            <div className="footer-content flex flex-col items-center justify-between gap-8 md:flex-row">
-              <div>
-                <p className="text-lg font-light tracking-[0.2em] text-white/60">
-                  HERMÈS
-                </p>
-                <p className="mt-2 text-xs text-white/20">
-                  Messager des Idées — Blog Nouvelle Génération
-                </p>
-              </div>
-              <div className="flex items-center gap-6 text-xs text-white/20">
-                <span>© {new Date().getFullYear()}</span>
+            <div className="footer-content flex flex-col items-center justify-between gap-4 md:flex-row">
+              <p className="text-xs text-white/20 tracking-[0.15em] uppercase font-light">
+                Hermès
+              </p>
+              <div className="flex items-center gap-4 text-[11px] text-white/20">
+                <span>© 2026</span>
                 <span className="h-3 w-px bg-white/[0.06]" />
                 <span>Next.js + GSAP</span>
-                <span className="h-3 w-px bg-white/[0.06]" />
-                <span>Propulsé par Hermes Agent</span>
               </div>
             </div>
           </div>
