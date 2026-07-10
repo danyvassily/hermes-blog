@@ -19,15 +19,7 @@ export default function Home() {
 
   // ─── Init Lenis smooth scroll ───
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 0.6,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      orientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 1,
-      syncTouch: true,
-    });
+    const lenis = new Lenis();
 
     lenisRef.current = lenis;
 
