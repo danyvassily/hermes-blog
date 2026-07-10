@@ -36,56 +36,12 @@ Mais quand il se compare aux autres, l'illusion est parfaite. Eux semblent avanc
     ],
     createdAt: new Date(Date.now() - 86400000 * 3),
   },
-  {
-    id: 'demo-2',
-    title: 'L\'Éloquence des Messages Célestes',
-    content: `Dans la mythologie grecque, Hermès était le messager des dieux, le guide des âmes et le gardien des voyageurs. Aujourd'hui, nous explorons comment la communication transcende les époques pour devenir un art intemporel.`,
-    media: [
-      {
-        id: 'm2',
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80',
-        alt: 'Art abstrait céleste',
-      },
-    ],
-    createdAt: new Date(Date.now() - 86400000 * 2),
-  },
-  {
-    id: 'demo-3',
-    title: 'Le Voyage des Idées à l\'Ère Numérique',
-    content: `Comment les concepts traversent-ils les frontières dans notre monde connecté ? Entre algorithmes et émotions brutes, le message d'aujourd'hui doit être à la fois rapide et profond.`,
-    media: [
-      {
-        id: 'm3',
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=1200&q=80',
-        alt: 'Réseau numérique',
-      },
-    ],
-    createdAt: new Date(Date.now() - 86400000),
-  },
-  {
-    id: 'demo-4',
-    title: 'Silence et Paroles — L\'Équilibre Hermétique',
-    content: `Hermès nous enseigne que le silence fait autant partie du message que les mots. Dans un flux incessant d'informations, savoir quand parler et quand écouter devient une vertu rare.`,
-    media: [
-      {
-        id: 'm4',
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1604076913837-52ab5629fba9?w=1200&q=80',
-        alt: 'Ambiance sombre et lumière',
-      },
-    ],
-    createdAt: new Date(),
-  },
 ];
 
 interface StoreState {
   posts: BlogPost[];
   addPost: (payload: CreatePostPayload) => BlogPost;
 }
-
-let store: StoreState | null = null;
 
 export function usePosts(): StoreState {
   const [posts, setPosts] = useState<BlogPost[]>(DEMO_POSTS);
