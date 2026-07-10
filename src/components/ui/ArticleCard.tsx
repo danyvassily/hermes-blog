@@ -9,9 +9,10 @@ import type { BlogPost } from '@/types';
 interface ArticleCardProps {
   post: BlogPost;
   index: number;
+  onClick: (post: BlogPost) => void;
 }
 
-export function ArticleCard({ post, index }: ArticleCardProps) {
+export function ArticleCard({ post, index, onClick }: ArticleCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -71,6 +72,7 @@ export function ArticleCard({ post, index }: ArticleCardProps) {
   return (
     <article
       ref={cardRef}
+      onClick={() => onClick(post)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
