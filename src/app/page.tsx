@@ -20,12 +20,13 @@ export default function Home() {
   // ─── Init Lenis smooth scroll ───
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 0.6,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
       orientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.8,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 1,
+      touchMultiplier: 1,
+      syncTouch: true,
     });
 
     lenisRef.current = lenis;
@@ -60,8 +61,8 @@ export default function Home() {
         if (feedSection && lenisRef.current) {
           lenisRef.current.scrollTo(feedSection, {
             offset: -40,
-            duration: 1.5,
-            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            duration: 1.2,
+            easing: (t: number) => 1 - Math.pow(1 - t, 3),
           });
         }
       }, 400);
