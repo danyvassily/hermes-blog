@@ -3,6 +3,7 @@ export interface BlogPost {
   title: string;
   content: string;
   media: MediaItem[];
+  category?: string;
   createdAt: Date;
 }
 
